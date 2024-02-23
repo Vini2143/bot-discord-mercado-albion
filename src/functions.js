@@ -1,65 +1,17 @@
-const fs = require("fs")
-const { promisify } = require("util")
+import * as commands from './commands.js'
 
-const readdir = promisify(fs.readdir)
+export async function LoadCommandsTo(collection) {
+    
+    const commandList = []
 
-async function loadFiles(dirName) {
-	const basePath = `${process.cwd().replace(/\\/g, "/")}/src/${dirName}`
+    for (const command of Object.values(commands)) {
+        collection.set(command.data.name, command.default)
 
-	const files = []
-	const items = await readdir(basePath)
-	for (const item of items) {
-		const itemPath = `${basePath}/${item}`
-		if (itemPath.endsWith(".js")) {
-			files.push(itemPath)
-			delete require.cache[require.resolve(itemPath)]
-		}
-	}
+        console.log(`Carregando o comando: ${command.data.name}`)
 
-	return files
-}
+        commandList.push(command.data.toJSON())
+    }
 
-async function loadCommands(client) {
-	await client.commands.clear()
-
-	const commandsArray = []
-
-	const Files = await loadFiles("commands")
-
-	Files.forEach((file) => {
-		const command = require(file)
-		client.commands.set(command.data.name, command)
-		commandsArray.push(command.data.toJSON())
-
-		console.log(`Comando: ${command.data.name} ✅`)
-	})
-
-	client.application.commands.set(commandsArray)
-}
-
-async function loadEvents(client) {
-	await client.events.clear()
-
-	const Files = await loadFiles("events")
-
-	Files.forEach((file) => {
-		const event = require(file)
-
-		const execute = (...args) => event.execute(...args, client)
-		client.events.set(event.name, execute)
-
-		if (event.once) {
-			client.once(event.name, execute)
-		} else {
-			client.on(event.name, execute)
-		}
-
-		console.log(`Evento: ${event.name} ✅`)
-	})
-}
-
-module.exports = {
-	loadFiles,
-	loadEvents,
-	loadCommands,
-}
+    console.log('Todos os comandos foram carregados')
+    return commandList
+} 

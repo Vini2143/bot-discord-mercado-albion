@@ -1,25 +1,48 @@
-// Importamos as dependências necessárias
-const { Client, GatewayIntentBits, Collection } = require("discord.js")
-require("dotenv").config()
+// imports
+import dotenv from 'dotenv'
+import { Client, Collection, Events, GatewayIntentBits } from 'discord.js'
+import { LoadCommandsTo } from './src/functions.js'
 
-// Importamos as funções que criamos
-const { loadEvents, loadCommands } = require("./src/functions")
 
-// Criamos uma instância do client
-const client = new Client({
-	intents: [GatewayIntentBits.Guilds],
+// carregando config
+dotenv.config()
+
+// variaveis e instancias
+const token = process.env.TOKEN
+const client = new Client({ intents: [GatewayIntentBits.Guilds] })
+
+client.commands = new Collection
+
+
+
+
+// executado ao iniciar
+client.once(Events.ClientReady, async readyClient => {
+	console.log(`${readyClient.user.tag} is running...`)
+
+	LoadCommandsTo(client.commands).then(commandList => {
+		client.application.commands.set(commandList)
+	})
 })
 
-// Quando o client (bot) estiver pronto, escrevemos no console
-client.once("ready", () => {
-	console.log("Olá mundo!")
+// interações
+client.on(Events.InteractionCreate, async interaction => {
+	if (!interaction.isChatInputCommand()) return
 
-    client.commands = new Collection()
-	client.events = new Collection()
+	const command = interaction.client.commands.get(interaction.commandName);
 
-	loadEvents(client)
-	loadCommands(client)
-})
+	if (!command) {
+		console.log(`No command matching ${interaction.commandName} was found.`);
+		return;
+	}
 
-// Logamos o bot
-client.login(process.env.TOKEN)
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.log(error)
+	}
+
+});
+
+// logando client
+client.login(token);

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "tentativa de criar um bot do discord que faça consultas na api do Albion Data Project",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
