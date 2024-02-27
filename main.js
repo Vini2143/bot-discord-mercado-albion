@@ -1,7 +1,7 @@
 // imports
 import dotenv from 'dotenv'
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js'
-import { LoadCommandsTo } from './src/functions.js'
+import { LoadCommandsIn } from './src/functions.js'
 
 
 // carregando config
@@ -14,15 +14,18 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 client.commands = new Collection
 
 
-
-
 // executado ao iniciar
 client.once(Events.ClientReady, async readyClient => {
-	console.log(`${readyClient.user.tag} is running...`)
+	console.log(`${readyClient.user.tag} foi iniciado...`)
 
-	LoadCommandsTo(client.commands).then(commandList => {
-		client.application.commands.set(commandList)
-	})
+	try {
+		await LoadCommandsIn(client)
+
+	} catch (error) {
+		console.log(error)
+	}
+	
+	console.log('Todos os comandos foram carregados.')
 })
 
 // interações
@@ -32,7 +35,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	const command = interaction.client.commands.get(interaction.commandName);
 
 	if (!command) {
-		console.log(`No command matching ${interaction.commandName} was found.`);
+		console.log(`O comando ${interaction.commandName} não existe!`);
 		return;
 	}
 

@@ -1,17 +1,16 @@
 import * as commands from './commands.js'
 
-export async function LoadCommandsTo(collection) {
+export async function LoadCommandsIn(client) {
     
     const commandList = []
 
     for (const command of Object.values(commands)) {
-        collection.set(command.data.name, command.default)
+        client.commands.set(command.data.name, command)
 
-        console.log(`Carregando o comando: ${command.data.name}`)
+        console.log(`Comando ${command.data.name} carregado com sucesso!`)
 
         commandList.push(command.data.toJSON())
     }
 
-    console.log('Todos os comandos foram carregados')
-    return commandList
+    client.application.commands.set(commandList)
 } 
