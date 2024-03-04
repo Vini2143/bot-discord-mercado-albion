@@ -1,16 +1,17 @@
-import { SlashCommandBuilder, EmbedBuilder, time } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, time } from "discord.js"
+import { readFileSync } from 'fs'
 
 const test = {
     data: new SlashCommandBuilder()
         .setName('teste')
         .setDescription('teste descrição')
-        .addStringOption((option) => {
+        .addStringOption(option => {
             return option
                 .setName("input")
                 .setDescription("uma string qualquer")
                 .setRequired(true)
         })
-        .addUserOption((option) => {
+        .addUserOption(option => {
             return option
                 .setName("user")
                 .setDescription("um usuário")
@@ -19,7 +20,7 @@ const test = {
 
     execute: async (interaction) => {
         console.log(interaction.options)
-        await interaction.reply('testado!');
+        await interaction.reply('testado!')
     },
 }
 
@@ -54,19 +55,39 @@ const user = {
                 }
             )
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.reply({ embeds: [embed] })
     },
 }
-const emmote = {
+const price = {
     data: new SlashCommandBuilder()
-        .setName('emmote')
-        .setDescription('emmo'),
+        .setName('price')
+        .setDescription('retorna uma lista de registros do item')
+        .addStringOption(option => {
+            return option
+                .setName("busca")
+                .setDescription("nome do item")
+                .setRequired(true)
+        }),
 
     execute: async (interaction) => {
-        await interaction.reply("( ͡° ͜ʖ ͡°)");
+        //const busca = interaction.options.getMember('busca')
+    
+        const fields = []
+
+
+        const embed = new EmbedBuilder()
+            .addFields(
+                {
+                    name: 'item',
+                    value: 'registros',
+                    inline: true,
+                }
+            )
+
+        await interaction.reply({ embeds: [embed] })
     },
 }
 
 
-export { test, user, emmote }
+export { test, user, price }
 

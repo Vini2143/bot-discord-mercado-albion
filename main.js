@@ -2,6 +2,7 @@
 import dotenv from 'dotenv'
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js'
 import { LoadCommandsIn } from './src/functions.js'
+import { readFileSync } from 'fs'
 
 
 // carregando config
@@ -17,6 +18,8 @@ client.commands = new Collection
 // executado ao iniciar
 client.once(Events.ClientReady, async readyClient => {
 	console.log(`${readyClient.user.tag} foi iniciado...`)
+
+	const itemsCodes = readFileSync('./src/data/itemsCode.json')
 
 	try {
 		await LoadCommandsIn(client)
