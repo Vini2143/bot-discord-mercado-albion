@@ -69,17 +69,21 @@ const price = {
                 .setRequired(true)
         }),
 
-    execute: async (interaction) => {
-        //const busca = interaction.options.getMember('busca')
-    
-        const fields = []
+    execute: async (interaction, itemsCodes) => {
+        const search = interaction.options.getString('busca')
+        const items = Object.values(itemsCodes)
 
+        const filteredItems = items.filter( item => { 
+            const itemLower = item.toLowerCase()
+            const SearchLower = search.toLowerCase()
+            return itemLower.includes(SearchLower)
+        })
 
         const embed = new EmbedBuilder()
             .addFields(
                 {
-                    name: 'item',
-                    value: 'registros',
+                    name: search,
+                    value: filteredItems.join('\n'),
                     inline: true,
                 }
             )

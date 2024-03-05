@@ -13,13 +13,13 @@ const token = process.env.TOKEN
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 
 client.commands = new Collection
+const itemsCodes = JSON.parse(readFileSync('./src/data/itemsCode.json'))
+
 
 
 // executado ao iniciar
 client.once(Events.ClientReady, async readyClient => {
 	console.log(`${readyClient.user.tag} foi iniciado...`)
-
-	const itemsCodes = readFileSync('./src/data/itemsCode.json')
 
 	try {
 		await LoadCommandsIn(client)
@@ -35,20 +35,30 @@ client.once(Events.ClientReady, async readyClient => {
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return
 
-	const command = interaction.client.commands.get(interaction.commandName);
+	const command = interaction.client.commands.get(interaction.commandName)
 	
 	if (!command) {
-		console.log(`O comando ${interaction.commandName} não existe!`);
-		return;
+		console.log(`O comando ${interaction.commandName} não existe!`)
+		return
 	}
 
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.log(error)
+	if (interaction.commandName === 'price') {
+		try {
+			await command.execute(interaction, itemsCodes)
+		} catch (error) {
+			console.log(error)
+		}		
+	} else {
+		try {
+			await command.execute(interaction)
+		} catch (error) {
+			console.log(error)
+		}
 	}
+
+
 
 });
 
 // logando client
-client.login(token);
+client.login(token)
